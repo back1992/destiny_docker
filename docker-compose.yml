@@ -1,0 +1,15 @@
+ version: '2'
+ services:
+   db:
+     image: postgres
+   web:
+     image: registry.tjoomla.com:5000/destiny:v5
+     build: .
+     command: python manage.py runserver 0.0.0.0:8000
+     volumes:
+#       - .:/code
+       - .:/usr/src/app
+     ports:
+       - "8000:8000"
+     depends_on:
+       - db
