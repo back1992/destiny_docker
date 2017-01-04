@@ -1,7 +1,23 @@
 FROM django:onbuild
  RUN sed -i 's/http:\/\/archive\.ubuntu\.com\/ubuntu\//http:\/\/mirrors\.163\.com\/ubuntu\//g' /etc/apt/sources.list
  RUN apt-get clean
- RUN apt-get update && apt-get -y install cron
+ RUN apt-get -y update && apt-get -y install upgrade
+ RUN apt-get install postgresql postgresql-contrib
+
+ USER postgres
+ RUN /etc/init.d/postgresql start \
+    && psql --command "CREATE USER pguser WITH SUPERUSER PASSWORD 'pguser';" \
+    && createdb -O pguser pgdb
+
+ USER root
+ RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf
+ RUN echo "listen_addresses='*'" >> /etc/postgresql/9.3/main/postgresql.conf
+ EXPOSE 5432
+ RUN mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql
+ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+ USER postgres
+ CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
+
 
  # Add crontab file in the cron directory
 # ADD crontab /etc/cron.d/hello-cron

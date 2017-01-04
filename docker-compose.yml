@@ -1,11 +1,20 @@
  version: '2'
  services:
    db:
-     image: postgres:latest
+     image: andreagrandi/postgresql:9.3
+#     volumes_from:
+#       - dbdata
+     ports:
+       - "5432:5432"
+#   dbdata:
+#     image: andreagrandi/postgresql:9.3
+#     volumes:
+#       - .:/var/lib/postgresql
+#     command: true
    web:
      image: registry.tjoomla.com:5000/destiny_pql:v1
-     links:
-       - postgres:postgres
+#     links:
+#       - postgres:postgres
      build: .
      command: python manage.py runserver 0.0.0.0:8000
      volumes:
@@ -16,10 +25,15 @@
      depends_on:
        - db
 
-   postgres:
-     restart: always
-     image: postgres:latest
-     ports:
-       - "5432:5432"
+#   postgres:
+#     restart: always
+#     image: postgres:latest
+#     ports:
+#       - "5432:5432"
 #     volumes:
 #       - pgdata:/var/lib/postgresql/data/
+
+
+
+
+
