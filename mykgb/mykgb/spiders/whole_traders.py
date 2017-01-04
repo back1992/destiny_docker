@@ -12,7 +12,6 @@ class WholeTradersSpider(scrapy.Spider):
     allowed_domains = ["www.baidu.com"]
     start_urls = ['http://www.baidu.com/']
 
-
     def __init__(self, msg_cc='', *args, **kwargs):
         self.msg_cc = ""
         self.receiver = '13261871395@163.com'
@@ -51,11 +50,16 @@ class WholeTradersSpider(scrapy.Spider):
 
         # df_signal_buy = df_signal[df_signal['vi'] > 0].sort_values(by=['vi'], ascending=[0])
         # df_signal_sell = df_signal[df_signal['vi'] < 0].sort_values(by=['vi'], ascending=[1])
-        df_signal_buy = df_signal[df_signal['var'] > 0][df_signal['interest'] > 0][df_signal['volume_var'] > 0].sort_values(by=['var'], ascending=[0])
-        df_signal_sell = df_signal[df_signal['var'] < 0][df_signal['interest'] < 0][df_signal['volume_var'] > 0].sort_values(by=['var'], ascending=[1])
-        sm(u"new 今日做多合约品种 " + date.strftime('%Y-%m-%d'), self.send_signal_buy(df_signal_buy), self.receiver, self.msg_cc)
-        sm(u"new 今日做空合约品种 " + date.strftime('%Y-%m-%d'), self.send_signal_sell(df_signal_sell), self.receiver,
-           self.msg_cc)
+        df_signal_buy = df_signal[df_signal['var'] > 0][df_signal['interest'] > 0][
+            df_signal['volume_var'] > 0].sort_values(by=['var'], ascending=[0])
+        df_signal_sell = df_signal[df_signal['var'] < 0][df_signal['interest'] < 0][
+            df_signal['volume_var'] > 0].sort_values(by=['var'], ascending=[1])
+        self.send_signal_buy(df_signal_buy)
+        self.send_signal_sell(df_signal_sell)
+        # sm(u"new 今日做多合约品种 " + date.strftime('%Y-%m-%d'), self.send_signal_buy(df_signal_buy), self.receiver,
+        #    self.msg_cc)
+        # sm(u"new 今日做空合约品种 " + date.strftime('%Y-%m-%d'), self.send_signal_sell(df_signal_sell), self.receiver,
+        #    self.msg_cc)
 
     def get_signal_df(self, df):
         strength_interest = 0
@@ -86,6 +90,7 @@ class WholeTradersSpider(scrapy.Spider):
             action_signal, created = Signal.objects.update_or_create(code=Codeset.objects.get(codezh=row['code']))
             action_signal.trade = row['var']
             action_signal.save()
+        print(signal)
         return signal
 
     def send_signal_sell(self, df):
@@ -102,4 +107,5 @@ class WholeTradersSpider(scrapy.Spider):
             action_signal, created = Signal.objects.update_or_create(code=Codeset.objects.get(codezh=row['code']))
             action_signal.trade = row['var']
             action_signal.save()
+        print(signal)
         return signal

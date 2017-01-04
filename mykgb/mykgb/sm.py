@@ -18,6 +18,8 @@ def sm(title, body, *args):
     if not receiver:
         receiver = '13261871395@163.com'
 
+    print(msg.as_string())
+
     s = smtplib.SMTP(host, port)
     s.login(sender, pwd)
     s.sendmail(sender, receiver, msg.as_string())

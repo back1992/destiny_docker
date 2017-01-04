@@ -1,2 +1,7 @@
-pip
-
+numpy
+TA-Lib
+quandl
+django
+django-pandas
+psycopg2
+scrapy

@@ -20,10 +20,7 @@ class PositionSpider(scrapy.Spider):
         # Position.objects.all().delete()
         date_price = set(Price.objects.order_by('-date').values_list('date',flat=True).distinct()[:60])
         date_position = set(Position.objects.values_list('date',flat=True).distinct())
-        print date_price
-        print date_position
         date_set = date_price - date_position
-        print date_set
         today  = datetime.datetime.today()
         if not today in date_set:
             date_set.add(today)

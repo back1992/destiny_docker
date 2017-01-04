@@ -3387,3 +3387,6 @@ mykgb/project.egg-info/
 mykgb/setup.py
 pgdata/
 temp/Dockerfile.2
+/requirements.txt
+/.venv/
+/destiny/settings.py
