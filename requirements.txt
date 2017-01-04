@@ -1,1 +1,2 @@
 pip
+TA-Lib

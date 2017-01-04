@@ -4,13 +4,11 @@ import re
 import scrapy
 from django.db.models import Q
 from myapp.models import *
-from destiny.items import *
+from mykgb.items import *
 from scrapy.utils.project import get_project_settings
 import pytz
 
 tz = pytz.timezone('Asia/Shanghai')
-
-settings = get_project_settings()
 
 
 class PriceGlobeSpider(scrapy.Spider):
