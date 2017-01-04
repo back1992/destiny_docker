@@ -7,7 +7,7 @@ from myapp.models import Codeset, Price, Position
 
 class PositionSpider(scrapy.Spider):
     name = "position"
-    allowed_domains = ["*"]
+    allowed_domains = ["hexun.com", 'baidu.com']
     start_urls = ['http://www.baidu.com/']
 
     custom_settings = {
@@ -17,14 +17,39 @@ class PositionSpider(scrapy.Spider):
     }
 
     def parse(self, response):
-        # date = Price.objects.aggregate(Max('date'))
-        # print(date['date__max'])
-        date = datetime.datetime.today().strftime('%Y-%m-%d')
+        # Position.objects.all().delete()
+        date_price = set(Price.objects.order_by('-date').values_list('date',flat=True).distinct()[:60])
+        date_position = set(Position.objects.values_list('date',flat=True).distinct())
+        print date_price
+        print date_position
+        date_set = date_price - date_position
+        print date_set
+        today  = datetime.datetime.today()
+        if not today in date_set:
+            date_set.add(today)
         qs = Codeset.objects.filter(actived=True)
         for p in qs:
-            url = 'http://data.futures.hexun.com/cccj.aspx?sBreed=' + p.sbreed + '&sContract=' + p.maincontract + '&sDate=' + date + '&sRank=2000'
-            yield scrapy.Request(url, meta={'code': p.codeen, 'date': date, 'url': url},
-                                 callback=self.parsePage)
+            for date in date_set:
+                date = date.strftime('%Y-%m-%d')
+                url = 'http://data.futures.hexun.com/cccj.aspx?sBreed=' + p.sbreed + '&sContract=' + p.maincontract + '&sDate=' + date + '&sRank=2000'
+                yield scrapy.Request(url, meta={'code': p.codeen, 'date': date, 'url': url},
+                                     callback=self.parsePage)
+
+
+    # print(date['date__max'])
+    # for p in qs:
+    #     url = 'http://data.futures.hexun.com/cccj.aspx?sBreed=' + p.sbreed + '&sContract=' + p.maincontract + '&sDate=' + date + '&sRank=2000'
+    #     yield scrapy.Request(url, meta={'code': p.codeen, 'date': date, 'url': url},
+    #                              callback=self.parsePage)
+    # def parse(self, response):
+    #     # date = Price.objects.aggregate(Max('date'))
+    #     # print(date['date__max'])
+    #     date = datetime.datetime.today().strftime('%Y-%m-%d')
+    #     qs = Codeset.objects.filter(actived=True)
+    #     for p in qs:
+    #         url = 'http://data.futures.hexun.com/cccj.aspx?sBreed=' + p.sbreed + '&sContract=' + p.maincontract + '&sDate=' + date + '&sRank=2000'
+    #         yield scrapy.Request(url, meta={'code': p.codeen, 'date': date, 'url': url},
+    #                              callback=self.parsePage)
 
     #
     #
