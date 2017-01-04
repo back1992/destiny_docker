@@ -3388,3 +3388,4 @@ mykgb/setup.py
 pgdata/
 temp/Dockerfile.2
 !/mykgb/mykgb/spiders/ladon.py
+/destiny/settings.py
